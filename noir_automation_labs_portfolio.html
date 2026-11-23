@@ -1,0 +1,792 @@
+<!DOCTYPE html>
+<html lang="en" class="dark scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NOIR // AUTOMATION LABS — AI & n8n Systems Architecture</title>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Fonts: Inter & JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace'],
+          },
+          colors: {
+            noir: {
+              bg: '#09090B',
+              surface: '#111114',
+              card: '#141418',
+              border: '#27272A',
+              muted: '#71717A',
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body {
+      background-color: #09090B;
+      color: #FAFAFA;
+      overflow-x: hidden;
+    }
+    .noir-grid {
+      background-size: 40px 40px;
+      background-image: 
+        linear-gradient(to right, rgba(39, 39, 42, 0.25) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(39, 39, 42, 0.25) 1px, transparent 1px);
+    }
+    .glass-card {
+      background: rgba(20, 20, 24, 0.78);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid #27272A;
+    }
+    .glow-emerald {
+      box-shadow: 0 0 30px -10px rgba(16, 185, 129, 0.22);
+    }
+  </style>
+</head>
+<body class="antialiased selection:bg-emerald-500/30 selection:text-emerald-200">
+
+  <!-- Toast Notification Banner -->
+  <div id="toast" class="fixed bottom-5 right-5 z-50 hidden items-center gap-2.5 rounded-xl border border-emerald-500/40 bg-[#111114]/95 px-4 py-3 text-sm text-emerald-300 shadow-2xl backdrop-blur-md transition-all">
+    <i data-lucide="check-circle-2" class="h-4 w-4 text-emerald-400"></i>
+    <span id="toast-msg">Copied to clipboard</span>
+  </div>
+
+  <!-- Top Navigation Bar -->
+  <header class="sticky top-0 z-40 border-b border-zinc-800/80 bg-[#09090B]/85 backdrop-blur-md">
+    <div class="mx-auto flex max-w-6xl items-center justify-between px-4 py-3.5 sm:px-6">
+      <!-- Faceless Studio Brand Mark -->
+      <a href="#" class="flex items-center gap-2.5 group">
+        <div class="flex h-8 w-8 items-center justify-center rounded-lg border border-zinc-700 bg-zinc-900 text-emerald-400 transition group-hover:border-emerald-500/50">
+          <i data-lucide="cpu" class="h-4 w-4"></i>
+        </div>
+        <div class="font-mono text-sm font-semibold tracking-wider text-zinc-100">
+          NOIR <span class="text-emerald-400">//</span> LABS
+        </div>
+      </a>
+
+      <!-- Desktop Nav Links -->
+      <nav class="hidden items-center gap-7 text-sm text-zinc-400 md:flex">
+        <a href="#systems" class="transition hover:text-zinc-100">Live Systems</a>
+        <a href="#architecture" class="transition hover:text-zinc-100">Architecture</a>
+        <a href="#engagement" class="transition hover:text-zinc-100">Engagement Terms</a>
+        <a href="#inquiry" class="transition hover:text-zinc-100">Project Brief</a>
+      </nav>
+
+      <!-- CTA + Studio Config Trigger -->
+      <div class="flex items-center gap-2.5">
+        <button onclick="toggleConfigModal()" title="Configure Studio Links & Videos" class="flex h-9 w-9 items-center justify-center rounded-lg border border-zinc-800 bg-zinc-900/80 text-zinc-400 transition hover:border-zinc-700 hover:text-zinc-100">
+          <i data-lucide="sliders-horizontal" class="h-4 w-4"></i>
+        </button>
+        <a href="#inquiry" class="inline-flex items-center gap-2 rounded-lg bg-emerald-500 px-3.5 py-2 text-xs font-semibold text-zinc-950 transition hover:bg-emerald-400 sm:text-sm">
+          <span>Request Audit</span>
+          <i data-lucide="arrow-up-right" class="h-4 w-4"></i>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Hero Section -->
+  <section class="relative overflow-hidden border-b border-zinc-800/80 noir-grid">
+    <div class="pointer-events-none absolute inset-0 bg-gradient-to-b from-emerald-500/[0.04] via-transparent to-[#09090B]"></div>
+    <div class="mx-auto max-w-6xl px-4 py-16 sm:px-6 sm:py-24">
+      <div class="max-w-3xl">
+        <!-- Operational Status Pill -->
+        <div class="mb-6 inline-flex items-center gap-2.5 rounded-full border border-zinc-800 bg-zinc-900/90 px-3.5 py-1.5 font-mono text-xs text-zinc-300">
+          <span class="relative flex h-2 w-2">
+            <span class="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75"></span>
+            <span class="relative inline-flex h-2 w-2 rounded-full bg-emerald-500"></span>
+          </span>
+          <span>B2B AI & n8n AUTOMATION ARCHITECTURE</span>
+        </div>
+
+        <h1 class="text-3xl font-bold tracking-tight text-zinc-50 sm:text-5xl sm:leading-[1.15]">
+          Eliminate Manual Operations. <br class="hidden sm:inline" />
+          <span class="bg-gradient-to-r from-zinc-100 via-emerald-300 to-sky-400 bg-clip-text text-transparent">
+            Deploy Autonomous n8n & AI Systems.
+          </span>
+        </h1>
+
+        <p class="mt-5 max-w-2xl text-base leading-relaxed text-zinc-400 sm:text-lg">
+          We engineer modular webhooks, AI qualification agents, and multi-modal bots that replace repetitive workflows—built for speed, reliability, and scale.
+        </p>
+
+        <!-- Primary & Secondary CTAs -->
+        <div class="mt-8 flex flex-col gap-3 sm:flex-row sm:items-center">
+          <a href="#systems" class="inline-flex items-center justify-center gap-2 rounded-xl bg-zinc-100 px-6 py-3.5 text-sm font-semibold text-zinc-950 transition hover:bg-white">
+            <i data-lucide="play" class="h-4 w-4 fill-zinc-950"></i>
+            <span>Explore Live Demos</span>
+          </a>
+          <a href="#inquiry" class="inline-flex items-center justify-center gap-2 rounded-xl border border-zinc-800 bg-zinc-900/80 px-6 py-3.5 text-sm font-medium text-zinc-200 transition hover:border-zinc-700 hover:bg-zinc-900">
+            <i data-lucide="terminal" class="h-4 w-4 text-emerald-400"></i>
+            <span>Request Custom Build</span>
+          </a>
+        </div>
+      </div>
+
+      <!-- Key Metrics / Trust Strip -->
+      <div class="mt-14 grid grid-cols-2 gap-3 sm:grid-cols-4 sm:gap-4">
+        <div class="glass-card rounded-xl p-4">
+          <div class="font-mono text-xs text-emerald-400">01 // RELIABILITY</div>
+          <div class="mt-1 text-sm font-semibold text-zinc-100">99.9% Uptime Logic</div>
+          <div class="mt-0.5 text-xs text-zinc-500">Error-trapped execution paths</div>
+        </div>
+        <div class="glass-card rounded-xl p-4">
+          <div class="font-mono text-xs text-sky-400">02 // STRUCTURE</div>
+          <div class="mt-1 text-sm font-semibold text-zinc-100">Modular Sub-Workflows</div>
+          <div class="mt-0.5 text-xs text-zinc-500">Clean router-based topology</div>
+        </div>
+        <div class="glass-card rounded-xl p-4">
+          <div class="font-mono text-xs text-emerald-400">03 // PRECISION</div>
+          <div class="mt-1 text-sm font-semibold text-zinc-100">Custom JS & API Logic</div>
+          <div class="mt-0.5 text-xs text-zinc-500">Strict validation & parsing</div>
+        </div>
+        <div class="glass-card rounded-xl p-4">
+          <div class="font-mono text-xs text-sky-400">04 // HANDOVER</div>
+          <div class="mt-1 text-sm font-semibold text-zinc-100">Zero-Bloat Delivery</div>
+          <div class="mt-0.5 text-xs text-zinc-500">Full JSON + self-hosted ownership</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Featured Systems (3 Portfolio Video Showcases) -->
+  <section id="systems" class="border-b border-zinc-800/80 py-16 sm:py-24">
+    <div class="mx-auto max-w-6xl px-4 sm:px-6">
+      <div class="flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
+        <div>
+          <div class="font-mono text-xs uppercase tracking-widest text-emerald-400">// PRODUCTION DEPLOYMENTS</div>
+          <h2 class="mt-2 text-2xl font-bold tracking-tight text-zinc-50 sm:text-3xl">Featured Automation Systems</h2>
+          <p class="mt-2 max-w-2xl text-sm text-zinc-400">
+            Real-world n8n + AI architectures demonstrating end-to-end execution, instant human-in-the-loop approvals, and structured database logging.
+          </p>
+        </div>
+        <button onclick="toggleConfigModal()" class="inline-flex items-center gap-2 self-start rounded-lg border border-zinc-800 bg-zinc-900/90 px-3.5 py-2 font-mono text-xs text-zinc-300 transition hover:border-emerald-500/50 hover:text-emerald-300 sm:self-auto">
+          <i data-lucide="video" class="h-3.5 w-3.5 text-emerald-400"></i>
+          <span>Attach Hosted Video URLs</span>
+        </button>
+      </div>
+
+      <!-- System Selector Tabs -->
+      <div class="mt-8 grid grid-cols-1 gap-2.5 sm:grid-cols-3">
+        <button onclick="selectSystem(0)" id="tab-0" class="system-tab flex items-center justify-between rounded-xl border border-emerald-500/60 bg-zinc-900 p-4 text-left transition">
+          <div>
+            <div class="font-mono text-xs text-emerald-400">SYSTEM 01 • 21s DEMO</div>
+            <div class="mt-1 text-sm font-semibold text-zinc-100">AI Lead Qualification Engine</div>
+          </div>
+          <i data-lucide="zap" class="h-4 w-4 text-emerald-400"></i>
+        </button>
+
+        <button onclick="selectSystem(1)" id="tab-1" class="system-tab flex items-center justify-between rounded-xl border border-zinc-800 bg-zinc-900/40 p-4 text-left transition hover:border-zinc-700">
+          <div>
+            <div class="font-mono text-xs text-zinc-400">SYSTEM 02 • 37s DEMO</div>
+            <div class="mt-1 text-sm font-semibold text-zinc-200">E-Com Order & Fulfillment Manager</div>
+          </div>
+          <i data-lucide="shopping-bag" class="h-4 w-4 text-zinc-500"></i>
+        </button>
+
+        <button onclick="selectSystem(2)" id="tab-2" class="system-tab flex items-center justify-between rounded-xl border border-zinc-800 bg-zinc-900/40 p-4 text-left transition hover:border-zinc-700">
+          <div>
+            <div class="font-mono text-xs text-zinc-400">SYSTEM 03 • 41s DEMO</div>
+            <div class="mt-1 text-sm font-semibold text-zinc-200">Multi-Modal Finance & Expense Bot</div>
+          </div>
+          <i data-lucide="layers" class="h-4 w-4 text-zinc-500"></i>
+        </button>
+      </div>
+
+      <!-- Active System Showcase Panel -->
+      <div id="system-showcase" class="glass-card glow-emerald mt-6 overflow-hidden rounded-2xl">
+        <div class="grid grid-cols-1 lg:grid-cols-12">
+          
+          <!-- Left: Video Player / Interactive Preview Stage (7 cols) -->
+          <div class="border-b border-zinc-800 bg-[#070709] p-4 sm:p-6 lg:col-span-7 lg:border-b-0 lg:border-r">
+            <div class="mb-3 flex items-center justify-between">
+              <div class="flex items-center gap-2">
+                <span class="h-2.5 w-2.5 rounded-full bg-zinc-700"></span>
+                <span class="h-2.5 w-2.5 rounded-full bg-zinc-700"></span>
+                <span class="h-2.5 w-2.5 rounded-full bg-emerald-500/80"></span>
+                <span id="sys-window-title" class="ml-2 font-mono text-xs text-zinc-400">workflow_01_lead_qualification.mp4</span>
+              </div>
+              <span id="sys-duration-badge" class="rounded-md border border-zinc-800 bg-zinc-900 px-2 py-0.5 font-mono text-[11px] text-emerald-400">00:21</span>
+            </div>
+
+            <!-- Video Container -->
+            <div id="video-stage" class="relative aspect-video w-full overflow-hidden rounded-xl border border-zinc-800 bg-zinc-950">
+              <!-- Rendered dynamically via JS: either real <video>/<iframe> or interactive node simulation -->
+            </div>
+
+            <!-- Quick Local File / URL Loader Bar -->
+            <div class="mt-3.5 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+              <div class="flex items-center gap-2 text-xs text-zinc-500">
+                <i data-lucide="info" class="h-3.5 w-3.5 text-zinc-400"></i>
+                <span>Preview local `.mov/.mp4` directly or paste a hosted link in Studio Config.</span>
+              </div>
+              <label class="inline-flex cursor-pointer items-center justify-center gap-1.5 rounded-lg border border-zinc-800 bg-zinc-900 px-3 py-1.5 font-mono text-xs text-zinc-300 transition hover:border-zinc-700 hover:text-white">
+                <i data-lucide="upload" class="h-3.5 w-3.5 text-emerald-400"></i>
+                <span>Load Local Video File</span>
+                <input type="file" accept="video/*" class="hidden" onchange="loadLocalVideoFile(event)" />
+              </label>
+            </div>
+          </div>
+
+          <!-- Right: Technical Breakdown (5 cols) -->
+          <div class="flex flex-col justify-between p-5 sm:p-7 lg:col-span-5">
+            <div>
+              <div class="flex items-center justify-between">
+                <span id="sys-code" class="font-mono text-xs font-semibold text-emerald-400">SYS // 01</span>
+                <span class="rounded-full border border-emerald-500/30 bg-emerald-500/10 px-2.5 py-0.5 font-mono text-[11px] text-emerald-300">PRODUCTION READY</span>
+              </div>
+
+              <h3 id="sys-title" class="mt-2 text-xl font-bold text-zinc-50">AI Lead Qualification Engine</h3>
+              <p id="sys-subtitle" class="mt-1.5 text-sm leading-relaxed text-zinc-400">
+                Automated inbound lead capture, LLM intent & budget scoring, instant hot/cold routing, and formatted team alerts.
+              </p>
+
+              <!-- Tech Stack Tags -->
+              <div id="sys-tags" class="mt-4 flex flex-wrap gap-1.5">
+                <!-- Populated by JS -->
+              </div>
+
+              <!-- Problem -> Architecture -> Outcome -->
+              <div class="mt-6 space-y-3.5 border-t border-zinc-800/80 pt-5 text-xs">
+                <div>
+                  <div class="font-mono font-semibold uppercase tracking-wider text-zinc-500">01. Bottleneck</div>
+                  <p id="sys-problem" class="mt-1 leading-relaxed text-zinc-300"></p>
+                </div>
+                <div>
+                  <div class="font-mono font-semibold uppercase tracking-wider text-sky-400">02. Architecture</div>
+                  <p id="sys-arch" class="mt-1 leading-relaxed text-zinc-300"></p>
+                </div>
+                <div>
+                  <div class="font-mono font-semibold uppercase tracking-wider text-emerald-400">03. Business Outcome</div>
+                  <p id="sys-outcome" class="mt-1 leading-relaxed text-zinc-300"></p>
+                </div>
+              </div>
+            </div>
+
+            <div class="mt-6 pt-4">
+              <button onclick="prefillInquiryFromCurrent()" class="flex w-full items-center justify-center gap-2 rounded-xl bg-emerald-500 px-4 py-3 text-xs font-semibold text-zinc-950 transition hover:bg-emerald-400 sm:text-sm">
+                <span>Deploy Similar System</span>
+                <i data-lucide="arrow-right" class="h-4 w-4"></i>
+              </button>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Architecture & Delivery Standards -->
+  <section id="architecture" class="border-b border-zinc-800/80 bg-[#0B0B0E] py-16 sm:py-24">
+    <div class="mx-auto max-w-6xl px-4 sm:px-6">
+      <div class="max-w-2xl">
+        <div class="font-mono text-xs uppercase tracking-widest text-sky-400">// ENGINEERING & ENGAGEMENT PROTOCOL</div>
+        <h2 class="mt-2 text-2xl font-bold tracking-tight text-zinc-50 sm:text-3xl">How We Build & Engage</h2>
+        <p class="mt-2 text-sm text-zinc-400">
+          Structured B2B delivery designed for zero ambiguity, predictable milestones, and full client ownership of production assets.
+        </p>
+      </div>
+
+      <div id="engagement" class="mt-10 grid grid-cols-1 gap-5 md:grid-cols-3">
+        <!-- Card 1 -->
+        <div class="glass-card rounded-2xl p-6">
+          <div class="flex h-10 w-10 items-center justify-center rounded-xl border border-zinc-800 bg-zinc-900 font-mono text-sm font-bold text-emerald-400">
+            01
+          </div>
+          <h3 class="mt-5 text-base font-semibold text-zinc-100">Workflow Audit & Fixed Scope</h3>
+          <p class="mt-2 text-sm leading-relaxed text-zinc-400">
+            Before writing a single line of JS or placing an n8n node, we map your triggers, payloads, edge cases, and expected outputs into a locked technical specification and fixed quote.
+          </p>
+          <div class="mt-4 border-t border-zinc-800/80 pt-3 font-mono text-xs text-zinc-500">
+            DELIVERABLE: System Spec + Fixed Quote
+          </div>
+        </div>
+
+        <!-- Card 2 -->
+        <div class="glass-card rounded-2xl p-6">
+          <div class="flex h-10 w-10 items-center justify-center rounded-xl border border-zinc-800 bg-zinc-900 font-mono text-sm font-bold text-sky-400">
+            02
+          </div>
+          <h3 class="mt-5 text-base font-semibold text-zinc-100">Milestone-Protected Build (50/50)</h3>
+          <p class="mt-2 text-sm leading-relaxed text-zinc-400">
+            50% upfront deposit initiates architecture and staging build. You verify the live working system via recorded demo & test run before releasing the final 50% for full handover.
+          </p>
+          <div class="mt-4 border-t border-zinc-800/80 pt-3 font-mono text-xs text-zinc-500">
+            TERMS: 50% Kickoff • 50% Pre-Handover
+          </div>
+        </div>
+
+        <!-- Card 3 -->
+        <div class="glass-card rounded-2xl p-6">
+          <div class="flex h-10 w-10 items-center justify-center rounded-xl border border-zinc-800 bg-zinc-900 font-mono text-sm font-bold text-emerald-400">
+            03
+          </div>
+          <h3 class="mt-5 text-base font-semibold text-zinc-100">Modular & Maintainable</h3>
+          <p class="mt-2 text-sm leading-relaxed text-zinc-400">
+            We build clean router + sub-workflow patterns with custom JavaScript validation and fallback alerts—never fragile, unmaintainable spaghetti flows.
+          </p>
+          <div class="mt-4 border-t border-zinc-800/80 pt-3 font-mono text-xs text-zinc-500">
+            OWNERSHIP: Clean n8n JSON + Docs
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Interactive Project Inquiry / Lead Capture Section -->
+  <section id="inquiry" class="py-16 sm:py-24">
+    <div class="mx-auto max-w-6xl px-4 sm:px-6">
+      <div class="grid grid-cols-1 gap-8 lg:grid-cols-12">
+        
+        <!-- Left Column: Intake Form (7 cols) -->
+        <div class="glass-card rounded-2xl p-6 sm:p-8 lg:col-span-7">
+          <div class="font-mono text-xs uppercase tracking-widest text-emerald-400">// INITIATE SYSTEM AUDIT</div>
+          <h2 class="mt-2 text-2xl font-bold text-zinc-50">Scope Your Automation Build</h2>
+          <p class="mt-1.5 text-sm text-zinc-400">
+            Select your target system and operational bottleneck to generate a structured technical brief for immediate review.
+          </p>
+
+          <form id="brief-form" onsubmit="generateClientBrief(event)" class="mt-6 space-y-4">
+            <!-- System Interest -->
+            <div>
+              <label class="block font-mono text-xs uppercase text-zinc-400">Target System Architecture</label>
+              <select id="f-system" onchange="liveUpdateBrief()" class="mt-1.5 w-full rounded-xl border border-zinc-800 bg-zinc-950 px-3.5 py-3 text-sm text-zinc-100 outline-none transition focus:border-emerald-500">
+                <option value="AI Lead Qualification & Routing Engine">AI Lead Qualification & Routing Engine</option>
+                <option value="E-Commerce Order & Fulfillment Automation">E-Commerce Order & Fulfillment Automation</option>
+                <option value="Multi-Modal Bot & Custom Data Pipeline">Multi-Modal Bot & Custom Data Pipeline</option>
+                <option value="Full Operations Workflow Audit">Full Operations Workflow Audit</option>
+              </select>
+            </div>
+
+            <!-- Budget Range & Preferred Channel -->
+            <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+              <div>
+                <label class="block font-mono text-xs uppercase text-zinc-400">Estimated Budget (USD / EUR)</label>
+                <select id="f-budget" onchange="liveUpdateBrief()" class="mt-1.5 w-full rounded-xl border border-zinc-800 bg-zinc-950 px-3.5 py-3 text-sm text-zinc-100 outline-none transition focus:border-emerald-500">
+                  <option value="$500 – $1,500 (Single Workflow / Bot)">$500 – $1,500 (Single Workflow / Bot)</option>
+                  <option value="$1,500 – $3,500 (Multi-Workflow System)" selected>$1,500 – $3,500 (Multi-Workflow System)</option>
+                  <option value="$3,500+ (End-to-End Agency / Ops Suite)">$3,500+ (End-to-End Agency / Ops Suite)</option>
+                </select>
+              </div>
+              <div>
+                <label class="block font-mono text-xs uppercase text-zinc-400">Your Email or Telegram Handle</label>
+                <input id="f-contact" type="text" oninput="liveUpdateBrief()" placeholder="e.g. ops@company.com or @handle" class="mt-1.5 w-full rounded-xl border border-zinc-800 bg-zinc-950 px-3.5 py-3 text-sm text-zinc-100 placeholder-zinc-600 outline-none transition focus:border-emerald-500" required />
+              </div>
+            </div>
+
+            <!-- Bottleneck Description -->
+            <div>
+              <label class="block font-mono text-xs uppercase text-zinc-400">Current Process, Tools & Monthly Volume</label>
+              <textarea id="f-notes" rows="3" oninput="liveUpdateBrief()" placeholder="e.g. We receive ~400 inbound leads/orders monthly via webhook/forms and manually qualify & log them into Sheets/CRM..." class="mt-1.5 w-full rounded-xl border border-zinc-800 bg-zinc-950 px-3.5 py-3 text-sm text-zinc-100 placeholder-zinc-600 outline-none transition focus:border-emerald-500" required></textarea>
+            </div>
+
+            <div class="pt-1">
+              <button type="submit" class="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-emerald-500 px-5 py-3.5 text-sm font-semibold text-zinc-950 transition hover:bg-emerald-400">
+                <i data-lucide="file-code-2" class="h-4 w-4"></i>
+                <span>Compile Brief & Unlock Direct Dispatch</span>
+              </button>
+            </div>
+          </form>
+        </div>
+
+        <!-- Right Column: Live Compiled Brief & Direct Dispatch (5 cols) -->
+        <div class="flex flex-col justify-between rounded-2xl border border-zinc-800 bg-[#0D0D10] p-6 sm:p-7 lg:col-span-5">
+          <div>
+            <div class="flex items-center justify-between">
+              <span class="font-mono text-xs text-sky-400">// GENERATED TECHNICAL BRIEF</span>
+              <span class="rounded border border-zinc-800 bg-zinc-900 px-2 py-0.5 font-mono text-[10px] text-zinc-400">READY TO SEND</span>
+            </div>
+
+            <pre id="compiled-brief" class="mt-4 overflow-x-auto whitespace-pre-wrap rounded-xl border border-zinc-800/90 bg-zinc-950 p-4 font-mono text-xs leading-relaxed text-zinc-300"></pre>
+          </div>
+
+          <div class="mt-6 space-y-2.5">
+            <button onclick="copyBrief()" class="flex w-full items-center justify-center gap-2 rounded-xl border border-zinc-700 bg-zinc-900 px-4 py-3 text-xs font-semibold text-zinc-100 transition hover:border-zinc-600 hover:bg-zinc-800 sm:text-sm">
+              <i data-lucide="copy" class="h-4 w-4 text-emerald-400"></i>
+              <span>1-Click Copy Brief</span>
+            </button>
+
+            <div class="grid grid-cols-2 gap-2.5">
+              <a id="dispatch-telegram" href="#" target="_blank" rel="noopener noreferrer" class="flex items-center justify-center gap-2 rounded-xl border border-sky-500/30 bg-sky-500/10 px-3 py-2.5 text-xs font-semibold text-sky-300 transition hover:bg-sky-500/20">
+                <i data-lucide="send" class="h-3.5 w-3.5"></i>
+                <span>Send via Telegram</span>
+              </a>
+              <a id="dispatch-email" href="#" class="flex items-center justify-center gap-2 rounded-xl border border-emerald-500/30 bg-emerald-500/10 px-3 py-2.5 text-xs font-semibold text-emerald-300 transition hover:bg-emerald-500/20">
+                <i data-lucide="mail" class="h-3.5 w-3.5"></i>
+                <span>Send via Email</span>
+              </a>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- Minimalist Noir Footer -->
+  <footer class="border-t border-zinc-800/80 bg-[#070709] py-8">
+    <div class="mx-auto flex max-w-6xl flex-col items-center justify-between gap-4 px-4 text-xs text-zinc-500 sm:flex-row sm:px-6">
+      <div class="flex items-center gap-2 font-mono">
+        <span class="h-2 w-2 rounded-full bg-emerald-500"></span>
+        <span>NOIR // AUTOMATION LABS — ALL SYSTEMS OPERATIONAL</span>
+      </div>
+      <div>
+        <span>© 2026 Noir Automation Labs. Autonomous n8n & AI Systems Architecture.</span>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Studio Configuration Modal (To Easily Attach Video URLs & Contact Handles) -->
+  <div id="config-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/80 p-4 backdrop-blur-sm">
+    <div class="glass-card max-h-[90vh] w-full max-w-lg overflow-y-auto rounded-2xl p-6 shadow-2xl">
+      <div class="flex items-center justify-between border-b border-zinc-800 pb-4">
+        <div>
+          <div class="font-mono text-xs text-emerald-400">// STUDIO CONFIGURATION</div>
+          <h3 class="mt-0.5 text-lg font-bold text-zinc-100">Customize Video Links & Dispatch</h3>
+        </div>
+        <button onclick="toggleConfigModal()" class="rounded-lg border border-zinc-800 bg-zinc-900 p-1.5 text-zinc-400 hover:text-white">
+          <i data-lucide="x" class="h-4 w-4"></i>
+        </button>
+      </div>
+
+      <div class="mt-4 space-y-4 text-xs">
+        <p class="text-zinc-400">
+          Paste hosted video links (MP4, Cloudflare Stream, Bunny.net, or YouTube Unlisted URLs) and your studio contact handles. Settings save automatically in your browser.
+        </p>
+
+        <div>
+          <label class="block font-mono text-zinc-300">System 01 Video URL (AI Lead Qualification - 21s)</label>
+          <input id="cfg-vid-0" type="url" placeholder="https://... (MP4 or YouTube link)" class="mt-1 w-full rounded-lg border border-zinc-800 bg-zinc-950 px-3 py-2 text-zinc-100 outline-none focus:border-emerald-500" />
+        </div>
+
+        <div>
+          <label class="block font-mono text-zinc-300">System 02 Video URL (E-Com Orders Manager - 37s)</label>
+          <input id="cfg-vid-1" type="url" placeholder="https://... (MP4 or YouTube link)" class="mt-1 w-full rounded-lg border border-zinc-800 bg-zinc-950 px-3 py-2 text-zinc-100 outline-none focus:border-emerald-500" />
+        </div>
+
+        <div>
+          <label class="block font-mono text-zinc-300">System 03 Video URL (Finance & Expense Tracker - 41s)</label>
+          <input id="cfg-vid-2" type="url" placeholder="https://... (MP4 or YouTube link)" class="mt-1 w-full rounded-lg border border-zinc-800 bg-zinc-950 px-3 py-2 text-zinc-100 outline-none focus:border-emerald-500" />
+        </div>
+
+        <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
+          <div>
+            <label class="block font-mono text-zinc-300">Studio Telegram Username</label>
+            <input id="cfg-tg" type="text" placeholder="noir_automation" class="mt-1 w-full rounded-lg border border-zinc-800 bg-zinc-950 px-3 py-2 text-zinc-100 outline-none focus:border-emerald-500" />
+          </div>
+          <div>
+            <label class="block font-mono text-zinc-300">Studio Contact Email</label>
+            <input id="cfg-email" type="email" placeholder="audit@noirautomation.io" class="mt-1 w-full rounded-lg border border-zinc-800 bg-zinc-950 px-3 py-2 text-zinc-100 outline-none focus:border-emerald-500" />
+          </div>
+        </div>
+      </div>
+
+      <div class="mt-6 flex items-center justify-end gap-2.5 border-t border-zinc-800 pt-4">
+        <button onclick="toggleConfigModal()" class="rounded-lg border border-zinc-800 bg-zinc-900 px-4 py-2 text-xs font-medium text-zinc-300 hover:text-white">Cancel</button>
+        <button onclick="saveStudioConfig()" class="rounded-lg bg-emerald-500 px-4 py-2 text-xs font-semibold text-zinc-950 hover:bg-emerald-400">Save & Apply</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Core Portfolio Data for the 3 Automation Systems
+    const systemsData = [
+      {
+        code: 'SYS // 01',
+        windowTitle: '01_ai_lead_qualification_routing.mp4',
+        duration: '00:21',
+        title: 'AI Lead Qualification Engine',
+        subtitle: 'Instant webhook capture, Gemini LLM intent & budget scoring, priority routing, and formatted Telegram sales alerts with 1-tap reply drafts.',
+        tags: ['n8n', 'Gemini AI', 'Webhooks', 'Structured Output Parser', 'Telegram API'],
+        problem: 'High-ticket agencies lose warm leads when inbound form submissions sit unreviewed for hours without context or priority scoring.',
+        arch: 'Webhook trigger feeds raw payload into a Basic LLM Chain powered by Google Gemini + Structured Output Parser, formatting priority score & pre-written draft reply to Telegram.',
+        outcome: 'Sub-3-second qualification, automatic HIGH/LOW priority tagging, and single-tap copy-ready outreach drafts.',
+        videoUrl: '',
+        localBlobUrl: '',
+        nodes: ['Webhook POST', 'Gemini LLM Chain', 'JSON Output Parser', 'Telegram Alert + Draft']
+      },
+      {
+        code: 'SYS // 02',
+        windowTitle: '02_ecommerce_order_fulfillment.mp4',
+        duration: '00:37',
+        title: 'E-Commerce Order & Fulfillment Manager',
+        subtitle: 'Automated JSON order ingestion (200 OK), AI customer confirmation drafting, interactive Telegram 1-click approval buttons, and dual-tab Google Sheets logging.',
+        tags: ['n8n', 'AI Agent', 'Gemini Chat Model', 'Webhooks', 'Telegram Callbacks', 'Google Sheets'],
+        problem: 'Manual order entry and repetitive customer confirmation emails create fulfillment delays and costly human copy-paste errors.',
+        arch: 'Webhook receives order JSON, logs order row in Google Sheets, generates personalized confirmation copy via Gemini AI Agent, and awaits Telegram callback confirmation before dispatch.',
+        outcome: 'Zero manual data entry, human-in-the-loop approval in 1 click, and synchronized Orders + Email audit logs.',
+        videoUrl: '',
+        localBlobUrl: '',
+        nodes: ['Order Webhook', 'Sheets Row Insert', 'Gemini Email Agent', 'Telegram 1-Click Approval']
+      },
+      {
+        code: 'SYS // 03',
+        windowTitle: '03_multimodal_finance_tracker.mp4',
+        duration: '00:41',
+        title: 'Multi-Modal Finance & Expense Tracker',
+        subtitle: 'Telegram bot accepting text, voice notes, and receipt photos; instant preview with 1-click confirmation; /summary analytics; modular Router + Sub-Workflows.',
+        tags: ['n8n', 'Router + Sub-Workflows', 'Multi-Modal AI', 'Custom JavaScript', 'Telegram Bot API'],
+        problem: 'Tracking expenses across text, voice memos, and paper receipts breaks down when inputs require rigid manual formatting.',
+        arch: '[MAIN] 00 - Router dispatches traffic across 4 dedicated sub-workflows (01 Onboarding, 02 Multi-Input Parser & Cache, 03 Callback & DB Insert, 04 Summary Reports) with custom JS validation.',
+        outcome: 'Handles text, audio, and receipt images seamlessly with instant confirmation previews and live budget tracking.',
+        videoUrl: '',
+        localBlobUrl: '',
+        nodes: ['[MAIN] 00 Router', '02 Multi-Input Parser', '03 Callback & DB', 'Custom JS Validation']
+      }
+    ];
+
+    let activeSystemIndex = 0;
+    let studioConfig = {
+      videos: ['', '', ''],
+      telegram: 'noir_automation',
+      email: 'audit@noirautomation.io'
+    };
+
+    // Load saved config from localStorage if available
+    function initStudioConfig() {
+      try {
+        const saved = localStorage.getItem('noir_studio_config');
+        if (saved) {
+          studioConfig = { ...studioConfig, ...JSON.parse(saved) };
+          studioConfig.videos.forEach((url, idx) => {
+            if (systemsData[idx]) systemsData[idx].videoUrl = url || '';
+          });
+        }
+      } catch (e) {
+        console.warn('Config load skipped:', e);
+      }
+      document.getElementById('cfg-vid-0').value = studioConfig.videos[0] || '';
+      document.getElementById('cfg-vid-1').value = studioConfig.videos[1] || '';
+      document.getElementById('cfg-vid-2').value = studioConfig.videos[2] || '';
+      document.getElementById('cfg-tg').value = studioConfig.telegram || 'noir_automation';
+      document.getElementById('cfg-email').value = studioConfig.email || 'audit@noirautomation.io';
+    }
+
+    // Convert YouTube URLs to embed format if needed
+    function getEmbedInfo(url) {
+      if (!url) return null;
+      const ytMatch = url.match(/(?:youtube\.com\/(?:watch\?v=|embed\/|shorts\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/);
+      if (ytMatch) {
+        return { type: 'iframe', src: `https://www.youtube.com/embed/${ytMatch[1]}?rel=0` };
+      }
+      return { type: 'video', src: url };
+    }
+
+    // Render active system showcase
+    function selectSystem(index) {
+      activeSystemIndex = index;
+      const sys = systemsData[index];
+
+      // Update tabs styling
+      document.querySelectorAll('.system-tab').forEach((tab, i) => {
+        if (i === index) {
+          tab.classList.remove('border-zinc-800', 'bg-zinc-900/40');
+          tab.classList.add('border-emerald-500/60', 'bg-zinc-900');
+        } else {
+          tab.classList.add('border-zinc-800', 'bg-zinc-900/40');
+          tab.classList.remove('border-emerald-500/60', 'bg-zinc-900');
+        }
+      });
+
+      // Update details
+      document.getElementById('sys-window-title').textContent = sys.windowTitle;
+      document.getElementById('sys-duration-badge').textContent = sys.duration;
+      document.getElementById('sys-code').textContent = sys.code;
+      document.getElementById('sys-title').textContent = sys.title;
+      document.getElementById('sys-subtitle').textContent = sys.subtitle;
+      document.getElementById('sys-problem').textContent = sys.problem;
+      document.getElementById('sys-arch').textContent = sys.arch;
+      document.getElementById('sys-outcome').textContent = sys.outcome;
+
+      // Render tags
+      const tagsContainer = document.getElementById('sys-tags');
+      tagsContainer.innerHTML = sys.tags.map(tag =>
+        `<span class="rounded-md border border-zinc-800 bg-zinc-900/90 px-2.5 py-1 font-mono text-[11px] text-zinc-300">${tag}</span>`
+      ).join('');
+
+      // Render video stage (Local Blob > Hosted URL > Interactive Architecture Preview)
+      const stage = document.getElementById('video-stage');
+      const activeSrc = sys.localBlobUrl || sys.videoUrl;
+      const embed = getEmbedInfo(activeSrc);
+
+      if (embed && embed.type === 'iframe') {
+        stage.innerHTML = `<iframe src="${embed.src}" class="h-full w-full" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`;
+      } else if (embed && embed.type === 'video') {
+        stage.innerHTML = `<video src="${embed.src}" controls playsinline class="h-full w-full bg-black object-contain"></video>`;
+      } else {
+        // Sleek Interactive Architecture Stage when no video URL is attached yet
+        stage.innerHTML = `
+          <div class="flex h-full w-full flex-col justify-between bg-gradient-to-br from-zinc-950 via-[#0C0C10] to-zinc-950 p-5">
+            <div class="flex items-center justify-between">
+              <span class="inline-flex items-center gap-1.5 rounded border border-emerald-500/30 bg-emerald-500/10 px-2 py-0.5 font-mono text-[10px] text-emerald-300">
+                <span class="h-1.5 w-1.5 rounded-full bg-emerald-400"></span>
+                N8N WORKFLOW TOPOLOGY PREVIEW
+              </span>
+              <span class="font-mono text-[11px] text-zinc-500">${sys.duration} DEMO READY</span>
+            </div>
+
+            <!-- Visual Node Pipeline -->
+            <div class="my-auto grid grid-cols-2 gap-2.5 sm:grid-cols-4">
+              ${sys.nodes.map((node, idx) => `
+                <div class="relative rounded-xl border border-zinc-800 bg-zinc-900/90 p-3 text-center shadow-lg">
+                  <div class="font-mono text-[10px] text-emerald-400">NODE 0${idx + 1}</div>
+                  <div class="mt-1 text-xs font-medium text-zinc-100">${node}</div>
+                </div>
+              `).join('')}
+            </div>
+
+            <div class="flex flex-col items-center justify-between gap-2 border-t border-zinc-800/80 pt-3 sm:flex-row">
+              <span class="text-xs text-zinc-400">Attach your exported .mov/.mp4 or hosted URL to play inline.</span>
+              <button onclick="toggleConfigModal()" class="rounded-lg border border-emerald-500/40 bg-emerald-500/10 px-3 py-1 font-mono text-[11px] font-medium text-emerald-300 hover:bg-emerald-500/20">
+                + Link Video URL
+              </button>
+            </div>
+          </div>
+        `;
+      }
+
+      lucide.createIcons();
+    }
+
+    // Load local video file directly into browser preview
+    function loadLocalVideoFile(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+      const blobUrl = URL.createObjectURL(file);
+      systemsData[activeSystemIndex].localBlobUrl = blobUrl;
+      selectSystem(activeSystemIndex);
+      showToast(`Loaded "${file.name}" into preview player`);
+    }
+
+    // Toggle Studio Config Modal
+    function toggleConfigModal() {
+      const modal = document.getElementById('config-modal');
+      modal.classList.toggle('hidden');
+      modal.classList.toggle('flex');
+    }
+
+    // Save Studio Config
+    function saveStudioConfig() {
+      const v0 = document.getElementById('cfg-vid-0').value.trim();
+      const v1 = document.getElementById('cfg-vid-1').value.trim();
+      const v2 = document.getElementById('cfg-vid-2').value.trim();
+      const tg = document.getElementById('cfg-tg').value.trim().replace(/^@/, '') || 'noir_automation';
+      const email = document.getElementById('cfg-email').value.trim() || 'audit@noirautomation.io';
+
+      studioConfig = { videos: [v0, v1, v2], telegram: tg, email: email };
+      systemsData[0].videoUrl = v0;
+      systemsData[1].videoUrl = v1;
+      systemsData[2].videoUrl = v2;
+
+      try {
+        localStorage.setItem('noir_studio_config', JSON.stringify(studioConfig));
+      } catch (e) {}
+
+      toggleConfigModal();
+      selectSystem(activeSystemIndex);
+      liveUpdateBrief();
+      showToast('Studio configuration saved');
+    }
+
+    // Prefill inquiry form from active system card
+    function prefillInquiryFromCurrent() {
+      const map = [
+        'AI Lead Qualification & Routing Engine',
+        'E-Commerce Order & Fulfillment Automation',
+        'Multi-Modal Bot & Custom Data Pipeline'
+      ];
+      const select = document.getElementById('f-system');
+      select.value = map[activeSystemIndex];
+      liveUpdateBrief();
+      document.getElementById('inquiry').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    // Live Compile Client Technical Brief
+    function liveUpdateBrief() {
+      const system = document.getElementById('f-system').value;
+      const budget = document.getElementById('f-budget').value;
+      const contact = document.getElementById('f-contact').value.trim() || '[Your Email / Telegram]';
+      const notes = document.getElementById('f-notes').value.trim() || '[Describe current manual workflow & volume]';
+
+      const briefText = `NOIR // AUTOMATION LABS — SYSTEM BRIEF
+----------------------------------------
+TARGET SYSTEM : ${system}
+BUDGET RANGE  : ${budget}
+CLIENT CONTACT: ${contact}
+
+CURRENT BOTTLENECK & VOLUME:
+${notes}
+
+ENGAGEMENT TERMS:
+• Fixed Scope Specification
+• 50% Kickoff / 50% Pre-Handover`;
+
+      document.getElementById('compiled-brief').textContent = briefText;
+
+      // Update direct Telegram & Email links
+      const encoded = encodeURIComponent(briefText);
+      const subject = encodeURIComponent(`Automation Inquiry: ${system}`);
+      document.getElementById('dispatch-telegram').href = `https://t.me/${studioConfig.telegram}?text=${encoded}`;
+      document.getElementById('dispatch-email').href = `mailto:${studioConfig.email}?subject=${subject}&body=${encoded}`;
+    }
+
+    function generateClientBrief(e) {
+      e.preventDefault();
+      liveUpdateBrief();
+      copyBrief();
+    }
+
+    // Copy Brief using execCommand fallback for iframe compatibility
+    function copyBrief() {
+      const text = document.getElementById('compiled-brief').textContent;
+      const textarea = document.createElement('textarea');
+      textarea.value = text;
+      textarea.style.position = 'fixed';
+      textarea.style.opacity = '0';
+      document.body.appendChild(textarea);
+      textarea.select();
+      try {
+        document.execCommand('copy');
+        showToast('Technical brief copied to clipboard');
+      } catch (err) {
+        showToast('Select and copy the brief box');
+      }
+      document.body.removeChild(textarea);
+    }
+
+    // Toast helper
+    function showToast(message) {
+      const toast = document.getElementById('toast');
+      document.getElementById('toast-msg').textContent = message;
+      toast.classList.remove('hidden');
+      toast.classList.add('flex');
+      setTimeout(() => {
+        toast.classList.add('hidden');
+        toast.classList.remove('flex');
+      }, 3000);
+    }
+
+    // Initialize on load
+    window.addEventListener('DOMContentLoaded', () => {
+      initStudioConfig();
+      selectSystem(0);
+      liveUpdateBrief();
+      lucide.createIcons();
+    });
+  </script>
+</body>
+</html>
